@@ -18,7 +18,7 @@ bot = telebot.TeleBot(config.token)
 mysql.createTables
 
 
-# Callback Handlers
+# Обработчики обратного вызова
 @bot.callback_query_handler(func=lambda call: True)
 def callback_inline(call):
     if call.message:
@@ -28,7 +28,7 @@ def callback_inline(call):
                                         disable_web_page_preview=True)
 
 
-# Start Command
+# Команда запуска
 @bot.message_handler(commands=['start'])
 def start(message):
     if message.chat.type == 'private':
@@ -37,7 +37,7 @@ def start(message):
                          parse_mode='Markdown', disable_web_page_preview=True, reply_markup=markup.faqButton())
         mysql.start_bot(message.chat.id)
     else:
-        bot.reply_to(message, 'Please send me a PM if you\'d like to talk to the Support Team.')
+        bot.reply_to(message, 'Пожалуйста, напишите мне в личку, если вы хотите поговорить со службой поддержки.')
 
 
 # FAQ Command
@@ -54,7 +54,7 @@ def start(message):
 def ot_handler(message):
     if message.chat.id == config.support_chat:
         if not mysql.open_tickets:
-            bot.reply_to(message, "ℹ️ Great job, you answered all your tickets!")
+            bot.reply_to(message, "ℹ️ Отличная работа, вы ответили на все вопросы!")
             return
 
         ot_msg = '📨 *Open tickets:*\n\n'
@@ -94,13 +94,13 @@ def ot_handler(message):
             ticket_status = mysql.user_tables(user_id)['open_ticket']
 
             if ticket_status == 0:
-                bot.reply_to(message, '❌ That user has no open ticket...')
+                bot.reply_to(message, '❌ У этого пользователя нет open ticket...')
             else:
                 # Reset Open Tickets as well as the Spamfilter
                 mysql.reset_open_ticket(user_id)
-                bot.reply_to(message, '✅ Ok, closed that users ticket!')
+                bot.reply_to(message, '✅ Ок, закрыл этот пользовательский тикет!')
         else:
-            bot.reply_to(message, 'ℹ️ You\'d have to reply to a message')
+            bot.reply_to(message, 'ℹ️ Вы должны были бы ответить на сообщение')
     else:
         pass
 
@@ -110,7 +110,7 @@ def ot_handler(message):
 def ot_handler(message):
     if message.chat.id == config.support_chat:
         if not mysql.banned:
-            bot.reply_to(message, "ℹ️ Great news, nobody got banned... Yet.")
+            bot.reply_to(message, "ℹ️ Отличная новость, никого не забанили... Еще.")
             return
 
         ot_msg = '⛔️ *Banned users:*\n\n'
@@ -138,7 +138,7 @@ def ot_handler(message):
                 banned_status = mysql.user_tables(user_id)['banned']
 
                 if banned_status == 1:
-                    bot.reply_to(message, '❌ That user is already banned...')
+                    bot.reply_to(message, '❌ Этот пользователь уже забанен...')
                 else:
                     mysql.ban_user(user_id)
                     try:
@@ -146,14 +146,14 @@ def ot_handler(message):
                         mysql.reset_open_ticket(user_id)
                     except Exception as e:
                         pass
-                    bot.reply_to(message, '✅ Ok, banned that user!')
+                    bot.reply_to(message, '✅ Ок, забанили этого пользователя!')
 
             elif msg.getReferrer(message.text):
                 user_id = int(msg.getReferrer(message.text))
                 banned_status = mysql.user_tables(user_id)['banned']
 
                 if banned_status == 1:
-                    bot.reply_to(message, '❌ That user is already banned...')
+                    bot.reply_to(message, '❌ Этот пользователь уже забанен...')
                 else:
                     mysql.ban_user(user_id)
                     try:
@@ -161,12 +161,12 @@ def ot_handler(message):
                         mysql.reset_open_ticket(user_id)
                     except Exception as e:
                         pass
-                    bot.reply_to(message, '✅ Ok, banned that user!')
+                    bot.reply_to(message, '✅ Ок, забанили этого пользователя!')
         else:
-            bot.reply_to(message, 'ℹ️ You\'d have to either reply to a message or mention an `Users ID`.',
+            bot.reply_to(message, 'ℹ️ Вам нужно будет либо ответить на сообщение, либо указать `Users ID`.',
                          parse_mode='Markdown')
     except TypeError:
-        bot.reply_to(message, '❌ Are you sure I interacted with that user before...?')
+        bot.reply_to(message, '❌ Вы уверены, что я взаимодействовал с этим пользователем ранее...?')
 
 
 # Un-ban Useer
@@ -179,25 +179,25 @@ def ot_handler(message):
                 banned_status = mysql.user_tables(user_id)['banned']
 
                 if banned_status == 0:
-                    bot.reply_to(message, '❌ That user is already un-banned...')
+                    bot.reply_to(message, '❌ Этот пользователь уже не заблокирован...')
                 else:
                     mysql.unban_user(user_id)
-                    bot.reply_to(message, '✅ Ok, un-banned that user!')
+                    bot.reply_to(message, '✅ Хорошо, снимите бан с этого пользователя!')
 
             elif msg.getReferrer(message.text):
                 user_id = int(msg.getReferrer(message.text))
                 banned_status = mysql.user_tables(user_id)['banned']
 
                 if banned_status == 0:
-                    bot.reply_to(message, '❌ That user is already un-banned...')
+                    bot.reply_to(message, '❌ Этот пользователь уже не заблокирован...')
                 else:
                     mysql.unban_user(user_id)
-                    bot.reply_to(message, '✅ Ok, un-banned that user!')
+                    bot.reply_to(message, '✅ Хорошо, снимите бан с этого пользователя!')
             else:
-                bot.reply_to(message, 'ℹ️ You\'d have to either reply to a message or mention an `Users ID`.',
+                bot.reply_to(message, 'ℹ️ Вам нужно будет либо ответить на сообщение, либо указать `Users ID`.',
                              parse_mode='Markdown')
     except TypeError:
-        bot.reply_to(message, '❌ Are you sure I interacted with that user before...?')
+        bot.reply_to(message, '❌ Вы уверены, что я взаимодействовал с этим пользователем ранее...?')
 
 
 # Message Forward Handler (User - Support)
@@ -213,11 +213,11 @@ def echo_all(message):
 
         if banned == 1:
             return
-        elif msg.spam_handler_warning(bot, user_id, message):  # First spam warning
+        elif msg.spam_handler_warning(bot, user_id, message):  # Первое предупреждение о спаме
             return
         elif msg.bad_words_handler(bot, message):
             return
-        elif msg.spam_handler_blocked(bot, user_id, message):  # Final spam warning // user cant send messages anymore
+        elif msg.spam_handler_blocked(bot, user_id, message):  # Последнее предупреждение о спаме // пользователь больше не может отправлять сообщения
             return
         elif ticket_status == 0:
             mysql.open_ticket(user_id)
@@ -227,7 +227,7 @@ def echo_all(message):
             return
 
 
-# Message Forward Handler (Support - User)
+# Обработчик пересылки сообщений (поддержка - пользователь)
 @bot.message_handler(content_types=['text', 'photo', 'document'])
 def echo_all(message):
     while True:
@@ -243,7 +243,7 @@ def echo_all(message):
                 if banned_status == 1:
                     # If User is banned - un-ban user and sent message
                     mysql.unban_user(user_id)
-                    bot.reply_to(message, 'ℹ️ *FYI: That user was banned.*\n_Un-banned and sent message!_',
+                    bot.reply_to(message, 'ℹ️ *К вашему сведению: этот пользователь был забанен.*\n_Разбанен и отправил сообщение!_',
                                  parse_mode='Markdown')
 
                 elif ticket_status == 1:
@@ -257,13 +257,13 @@ def echo_all(message):
                         return
 
             except telebot.apihelper.ApiException:
-                bot.reply_to(message, '❌ I was unable to send that message...\nThe user might\'ve blocked me.')
+                bot.reply_to(message, '❌ Я не смог отправить это сообщение...\nПользователь, возможно, заблокировал меня.')
                 return
 
         except Exception as e:
-            bot.reply_to(message, '❌ Invalid command!')
+            bot.reply_to(message, '❌ Недопустимая команда!')
             return
 
 
-print("Telegram Support Bot started...")
+print("Запущен бот поддержки Telegram...")
 bot.polling()

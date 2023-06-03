@@ -9,7 +9,7 @@ import config
 from datetime import datetime
 
 
-# Connect to MySQL Database
+# Подключение к MySQL Database
 def getConnection():
     connection = pymysql.connect(host=config.mysql_host,
                                  user=config.mysql_user,
@@ -83,7 +83,7 @@ def start_bot(user_id):
         sql = "SELECT EXISTS(SELECT userid FROM users WHERE userid = %s)"
         cursor.execute(sql, user_id)
         result = cursor.fetchone()
-        # If the User never started the bot before, add the Telegram ID to the database
+        # Если пользователь никогда раньше не запускал бота, добавьте идентификатор Telegram в базу данных
         if not list(result.values())[0]:
             sql = "INSERT INTO users(userid) VALUES (%s)"
             cursor.execute(sql, user_id)
